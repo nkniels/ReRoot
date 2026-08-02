@@ -1,0 +1,16 @@
+/* Global styles and Tailwind directives.
+   This file pulls in Tailwind base, components, and utilities. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optional tiny defaults for layout */
+html, body, #__next {
+  height: 100%;
+}
+
+body {
+  @apply bg-green-50 text-green-800;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+}
