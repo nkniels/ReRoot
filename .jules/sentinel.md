@@ -1,0 +1,4 @@
+## 2024-03-20 - Error Handling and Input DoS Prevention
+**Vulnerability:** Supabase internal database error objects were being leaked directly to the client UI (`sbError.message`), potentially exposing internal schema details. Additionally, the application allowed unbounded query input sizes, creating a potential vector for Denial of Service via excessively large database queries.
+**Learning:** Even simple client-side applications querying Backend-as-a-Service (like Supabase) need strong validation before querying. Client-side state updates can inadvertently leak internal errors if the exception object properties are mapped directly to UI state.
+**Prevention:** Always log detailed error structures to the console/server-logs instead of displaying them directly to end-users. Catch database errors and map them to safe, generic strings. Enforce length constraints both client-side (`maxLength`) and immediately prior to performing server/database operations.
