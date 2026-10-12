@@ -27,6 +27,7 @@ export default function TranslatorBox({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         aria-label="English word"
+        maxLength={100}
       />
       <button
         type="submit"
