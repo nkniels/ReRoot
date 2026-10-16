@@ -19,7 +19,15 @@ export default function Page() {
   async function handleSearch(e) {
     if (e && e.preventDefault) e.preventDefault();
     const trimmed = query.trim();
+
+    // 🛡️ Sentinel: Input length validation to prevent DoS via complex LIKE queries
     if (!trimmed) {
+      setResults([]);
+      setSearched(true);
+      return;
+    }
+    if (trimmed.length > 100) {
+      setError("Search query is too long. Please keep it under 100 characters.");
       setResults([]);
       setSearched(true);
       return;
@@ -37,13 +45,17 @@ export default function Page() {
         .ilike("english", `%${trimmed}%`);
 
       if (sbError) {
-        setError(sbError.message || "Error fetching results");
+        // 🛡️ Sentinel: Log raw error securely, display generic message to avoid leaking DB schema
+        console.error("Supabase query error:", sbError);
+        setError("An error occurred while fetching results. Please try again.");
         setResults([]);
       } else {
         setResults(data || []);
       }
     } catch (err) {
-      setError(err.message || "Unknown error");
+      // 🛡️ Sentinel: Prevent stack trace leakage in the UI
+      console.error("Unknown error during search:", err);
+      setError("An unexpected error occurred. Please try again.");
       setResults([]);
     } finally {
       setLoading(false);
