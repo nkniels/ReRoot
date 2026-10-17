@@ -29,6 +29,13 @@ export default function Page() {
     setError(null);
     setSearched(true);
 
+    // Security: Input length limit to prevent application-layer DoS
+    if (trimmed.length > 100) {
+      setError("Search query is too long");
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error: sbError } = await supabase
         .from("words")
@@ -37,13 +44,17 @@ export default function Page() {
         .ilike("english", `%${trimmed}%`);
 
       if (sbError) {
-        setError(sbError.message || "Error fetching results");
+        // Security: Don't expose internal DB error messages to the user
+        console.error("Supabase query failed:", sbError);
+        setError("An error occurred while fetching results.");
         setResults([]);
       } else {
         setResults(data || []);
       }
     } catch (err) {
-      setError(err.message || "Unknown error");
+      // Security: Don't expose stack traces or detailed errors
+      console.error("Unexpected search error:", err);
+      setError("An unexpected error occurred.");
       setResults([]);
     } finally {
       setLoading(false);
