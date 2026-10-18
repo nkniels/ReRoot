@@ -25,6 +25,14 @@ export default function Page() {
       return;
     }
 
+    // 🔒 SECURITY: Input length limit to prevent DoS via excessively large queries
+    if (trimmed.length > 100) {
+      setError("Search query is too long. Please use 100 characters or less.");
+      setResults([]);
+      setSearched(true);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setSearched(true);
@@ -37,13 +45,17 @@ export default function Page() {
         .ilike("english", `%${trimmed}%`);
 
       if (sbError) {
-        setError(sbError.message || "Error fetching results");
+        // 🔒 SECURITY: Do not leak internal database errors to the client
+        console.error("Database query error:", sbError);
+        setError("An error occurred while fetching results. Please try again.");
         setResults([]);
       } else {
         setResults(data || []);
       }
     } catch (err) {
-      setError(err.message || "Unknown error");
+      // 🔒 SECURITY: Do not leak unknown runtime errors to the client
+      console.error("Unexpected search error:", err);
+      setError("An unexpected error occurred. Please try again.");
       setResults([]);
     } finally {
       setLoading(false);
