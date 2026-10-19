@@ -18,7 +18,10 @@ export default function Page() {
 
   async function handleSearch(e) {
     if (e && e.preventDefault) e.preventDefault();
-    const trimmed = query.trim();
+
+    // Security enhancement: limit input length to prevent excessive resource usage
+    const trimmed = query.trim().slice(0, 100);
+
     if (!trimmed) {
       setResults([]);
       setSearched(true);
@@ -37,13 +40,15 @@ export default function Page() {
         .ilike("english", `%${trimmed}%`);
 
       if (sbError) {
-        setError(sbError.message || "Error fetching results");
+        console.error("Supabase query error:", sbError);
+        setError("An error occurred while fetching results. Please try again.");
         setResults([]);
       } else {
         setResults(data || []);
       }
     } catch (err) {
-      setError(err.message || "Unknown error");
+      console.error("Unexpected error during search:", err);
+      setError("An unexpected error occurred. Please try again.");
       setResults([]);
     } finally {
       setLoading(false);
