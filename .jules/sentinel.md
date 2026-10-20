@@ -1,0 +1,4 @@
+## 2026-10-20 - [Information Leakage via Supabase Client]
+**Vulnerability:** [The application was exposing database internal error messages directly to the UI when a Supabase query failed.]
+**Learning:** [This existed because the frontend ('use client' component) queries Supabase directly, and the `sbError.message` from the Supabase JS client was being passed directly to `setError`, which rendered it in the DOM. This architectural choice means extra care must be taken to not leak backend schema or connection details to users.]
+**Prevention:** [When querying Supabase from the frontend, always intercept errors, log the detailed error to the console (or a logging service) for debugging, and display a generic, user-friendly error message in the UI.]
