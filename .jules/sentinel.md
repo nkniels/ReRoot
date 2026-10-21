@@ -1,0 +1,4 @@
+## 2026-10-21 - [Prevent Sensitive Data Exposure in Error Messages]
+**Vulnerability:** The application was directly rendering `sbError.message` and `err.message` in the UI upon database query failures. This can leak database schema details, backend architecture information, and potentially sensitive data directly to end users.
+**Learning:** Because the application queries Supabase directly from frontend ('use client') Next.js components, there is no intermediary server-side API layer to sanitize database errors before they reach the client interface. As a result, raw database errors were exposed.
+**Prevention:** Always implement a generic error message layer in client-side components that query the database. Log the actual database errors to the console (`console.error` or a secure logging service) for debugging, but only display safe, generic messages like "An error occurred while fetching results" to the user interface.
