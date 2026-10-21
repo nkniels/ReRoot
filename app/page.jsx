@@ -37,13 +37,15 @@ export default function Page() {
         .ilike("english", `%${trimmed}%`);
 
       if (sbError) {
-        setError(sbError.message || "Error fetching results");
+        console.error("Supabase query error:", sbError);
+        setError("An error occurred while fetching results");
         setResults([]);
       } else {
         setResults(data || []);
       }
     } catch (err) {
-      setError(err.message || "Unknown error");
+      console.error("Unknown search error:", err);
+      setError("An unexpected error occurred");
       setResults([]);
     } finally {
       setLoading(false);
