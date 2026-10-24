@@ -1,0 +1,4 @@
+## 2026-10-24 - [Information Disclosure via Frontend Supabase Queries]
+**Vulnerability:** The application executed Supabase queries directly from frontend React components and rendered raw `sbError.message` and `err.message` directly into the UI state on failure, which could expose database schema details, backend internals, or execution failures to end users.
+**Learning:** In architectures querying Supabase directly from frontend ('use client') components, error messages from the database client are often detailed and intended for developer debugging rather than user consumption. Direct pass-through of these messages constitutes an information disclosure vulnerability.
+**Prevention:** Always catch and log raw backend/database errors securely (e.g., using `console.error` or a secure logging service) on the client side without exposing them. Set UI error state to generic, safe fallback messages (e.g., "An error occurred while fetching results").
